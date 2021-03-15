@@ -10,19 +10,67 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.readers;
+
+  const user = users.find(user => user.username === username);
+
+  if (!user) {
+    return response.status(404).json({ error: 'Username not found!' });
+  }
+
+  request.user = user;
+
+  return next();
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  if ( (user.pro === false) && (user.todos.length > 10)) {
+    return response.status(403).json({ error: 'Ha um limite máximo de 10 registro para contas gratuitas, faça sua assinatura e tenha registro ilimitados.' })
+  }
+
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { id } = request.params; // id do todo que veio por parâmetro
+
+  if (id != validate) {
+    return response.status(404).json({ error: 'ID do todo não é um uuid!' });
+  }
+  
+  const user = users.find(user => user.username === username);
+
+  if (!user) {
+    return response.status(404).json({ error: 'Username not found!' });
+  }
+
+  const todo = user.todo.find(user => user.id === id);
+
+  if (!todo) {
+    return response.status(404).json({ error: 'Todo for user not found!' });
+  }
+
+  request.user = user;
+  request.todo = todo;
+
+  return next();
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+
+  const user = users.find(user => user.id === id);
+
+  if (!user) {
+    return response.status(404).json({ error: 'Username not found!' });
+  }
+
+  request.user = user;
+
+  return next();
 }
 
 app.post('/users', (request, response) => {
